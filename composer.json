@@ -1,0 +1,14 @@
+{
+   "name": "DariuszJakubowski/InternTasks",
+   "description": "tasks for an intern",
+   "author": "Darek",
+   "require-dev": {
+      "phpunit/phpunit": "6.2.*",
+      "php": ">=7.1"
+   },
+   "autoload": {
+      "psr-4": {
+         "Clearcode\\": "src/"
+      }
+   }
+}
