@@ -44,4 +44,23 @@ class Spell
 
         return $match;
     }
+
+    //fail in test
+    public function calculateDamage()
+    {
+
+        $spell = $this->getSpell();
+        $damage = 0;
+
+        foreach ($this->powerOfSubspells as $subspell => $power) {
+            $damage += $power * preg_match_all("/$subspell/", $spell);
+            $spell = preg_replace("/$subspell/", '', $spell);
+        }
+        $damage = $damage - strlen($spell);
+        if($damage < 0) {
+            $damage = 0;
+        }
+
+        return $damage;
+    }
 }
