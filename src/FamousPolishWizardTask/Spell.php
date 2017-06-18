@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: bruto
- * Date: 6/17/17
- * Time: 12:11 AM
- */
 
 namespace Clearcode\FamousPolishWizardTask;
-
 
 class Spell
 {
@@ -31,6 +24,10 @@ class Spell
         $this->spell = $this->splitSpell($spell);
     }
 
+    /**
+     * @param $crudeSpell
+     * @return mixed Returns false if string is incorrect, returns filtered string when it is correct
+     */
     public function splitSpell($crudeSpell)
     {
         //'fe' can occur only once
@@ -39,32 +36,15 @@ class Spell
         }
 
         preg_match_all('/fe(\w)*ai/', $crudeSpell, $matches);
-        // last 'ai'
+        //get last 'ai'
         $match = end($matches[0]);
 
         return $match;
     }
 
-    //fail in test
-//    public function calculateDamage()
-//    {
-//
-//        $spell = $this->getSpell();
-//        $damage = 0;
-//
-//        foreach ($this->powerOfSubspells as $subspell => $power) {
-//            $damage += $power * preg_match_all("/$subspell/", $spell);
-//            $spell = preg_replace("/$subspell/", '', $spell);
-//        }
-//        $damage = $damage - strlen($spell);
-//        if($damage < 0) {
-//            $damage = 0;
-//        }
-//
-//        return $damage;
-//    }
-
-
+    /**
+     * @return int
+     */
     public function calculateDamage()
     {
         $damage = 0;
@@ -88,8 +68,4 @@ class Spell
         return $damage;
     }
 
-    public function __get($name)
-    {
-        return $this->powerOfSubspells[$name];
-    }
 }
