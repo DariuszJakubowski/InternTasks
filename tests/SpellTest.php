@@ -36,7 +36,7 @@ class SpellTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(8, $this->spell->calculateDamage());
 
         $this->spell->setSpell('fexxxxxai');
-        $this->assertEquals(2, $this->spell->calculateDamage(), 'Damage equals -2 ( = 1 - 5 + 2), but you can\'t gives -2 damage, so damage should by 0.');
+        $this->assertEquals(0, $this->spell->calculateDamage(), 'Damage equals -2 ( = 1 - 5 + 2), but you can\'t gives -2 damage, so damage should by 0.');
 
         $this->spell->setSpell('feaineai');
         $this->assertEquals(7, $this->spell->calculateDamage());
