@@ -6,20 +6,8 @@ use Exception;
 
 function openFile($file): array
 {
-    try {
+    $document = file($file) or die('File open failed.');
 
-        if (!file_exists($file)) {
-            throw new Exception('File not found.');
-        }
-
-        $document = file($file);
-        if (!$document) {
-            throw new Exception('File open failed.');
-        }
-
-    } catch (Exception $e) {
-        exit($e->getMessage());
-    }
     return $document;
 }
 
@@ -41,7 +29,7 @@ function groupBy(string $path, string $term, bool $isMissionSuccessed = null): a
     $firstRow = $launchlogArray[0];
     $launchDatePosition = strpos($firstRow, 'Launch Date');
     $successPosition = strpos($firstRow, 'Suc');
-
+//
     foreach ($launchlogArray as $key => $row) {
 // skip 2 rows  with header of "table"
         if ($key < 2) {
@@ -73,7 +61,7 @@ function groupBy(string $path, string $term, bool $isMissionSuccessed = null): a
         }
 
     }
-
+// var_dump($missions);
     foreach ($missions as $key => $value) {
 
         if ($isMissionSuccessed === true) {
@@ -88,3 +76,8 @@ function groupBy(string $path, string $term, bool $isMissionSuccessed = null): a
 
     return $missions;
 }
+
+
+var_dump(groupBy('http://planet4589.org/space/log/launchlog.txt', 'month'));
+//var_dump(groupBy('launchlog.txt', 'month', false));
+//var_dump(groupBy('launchlog.txt', 'year', false));
