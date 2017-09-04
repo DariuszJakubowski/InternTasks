@@ -2,82 +2,43 @@
 
 namespace Clearcode\RocketScienceTask;
 
-use Exception;
-
-function openFile($file): array
+function openFile($file)
 {
     $document = file($file) or die('File open failed.');
 
     return $document;
 }
 
+// return sum of missions group by term(month or year)
 
-
-function groupBy(string $path, string $term, bool $isMissionSuccessed = null): array
+function groupBy($path, $term, $isMissionSuccessed = null)
 {
-    try {
-
-        if (!preg_match('/^(month)|(year)$/', $term)) {
-            throw new Exception('Wrong param.');
-        }
-
-    } catch (Exception $e) {
-        exit($e->getMessage());
+    $term = ($term == 'month') ? 'M' : ($term == 'year') ? 'Y' : die('Wrong param!');
+    if($isMissionSuccessed === true){
+    	$isMissionSuccessed = 'S';
+    } elseif ($isMissionSuccessed === false) {
+    	$isMissionSuccessed = 'F';
     }
-
-    $launchlogArray = openFile($path);
+	$launchlogArray = openFile($path);
     $firstRow = $launchlogArray[0];
     $launchDatePosition = strpos($firstRow, 'Launch Date');
+    $dateLength = strlen('1900 Jan 01');
     $successPosition = strpos($firstRow, 'Suc');
-//
+    $launch = [];
+    $output = [];
     foreach ($launchlogArray as $key => $row) {
 // skip 2 rows  with header of "table"
-        if ($key < 2) {
-            continue;
-        }
-
-        switch ($term) {
-
-            case 'year':
-                if (!is_numeric(substr($row, $launchDatePosition, 1))) {
-                    $missions[$year][$success]++;
-                } else {
-                    $year = substr($row, $launchDatePosition, 4);
-                    $success = substr($row, $successPosition, 1);
-
-                    $missions[$year][$success] = isset($missions[$year][$success]) ? ++$missions[$year][$success] : 1;
-                }
-                break;
-
-            case 'month':
-                if (!is_numeric(substr($row, $launchDatePosition, 1))) {
-                    $missions[$month][$success]++;
-                } else {
-                    $month = substr($row, $launchDatePosition + 5, 3);
-                    $success = substr($row, $successPosition, 1);
-                    $missions[$month][$success] = isset($missions[$month][$success]) ? ++$missions[$month][$success] : 1;
-                }
-                break;
-        }
-
-    }
-// var_dump($missions);
-    foreach ($missions as $key => $value) {
-
-        if ($isMissionSuccessed === true) {
-
-            $missions[$key] = $value['S'];
-        } elseif ($isMissionSuccessed === false) {
-            $missions[$key] = $value['F'];
-        } else {
-            $missions[$key] = array_sum($value);
-        }
-    }
-
-    return $missions;
+        if ($key < 2) continue;
+        $launch[$key]['term'] = !empty(trim(substr($row, $launchDatePosition, $dateLength))) ? DateTime::createFromFormat('Y M d' , substr($row, $launchDatePosition, $dateLength)) : $launch[$key-1]['term'];
+        $launch[$key]['success'] = is_string(substr($row,$successPosition, 1)) ? substr($row, $successPosition, 1) : $launch[$key-1]['success'];
+        if(!isset($output[$launch[$key]['term']->format($term)])) $output[$launch[$key]['term']->format($term)] = 0;
+        $output[$launch[$key]['term']->format($term)] +=  is_null($isMissionSuccessed) ? 1 : ($launch[$key]['success']=== $isMissionSuccessed) ? 1 : 0;
+	}
+	return $output;
 }
 
-
-var_dump(groupBy('http://planet4589.org/space/log/launchlog.txt', 'month'));
+echo '<pre>';
+var_dump(groupBy('http://planet4589.org/space/log/launchlog.txt', 'year', false)); 
+echo '</pre>';
 //var_dump(groupBy('launchlog.txt', 'month', false));
 //var_dump(groupBy('launchlog.txt', 'year', false));
